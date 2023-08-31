@@ -11,7 +11,7 @@ export default function Redirecter({ params }: { params: { id: string } }) {
   });
 
   return (
-    <main className="h-screen flex items-center">
+    <main className="h-screen flex items-center justify-center w-screen">
       <Lottie animationData={octopus} loop={true} />
     </main>
   );
