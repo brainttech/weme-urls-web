@@ -46,15 +46,19 @@ export default function LinkItem({ link }: Props) {
                     wordBreak: "break-all",
                   }}
                 >
-                  {link.url}das;ldkmas;dkas;dklas;ldk;asldks;ldk;slakd
+                  {link.url}
                 </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <p>Visitas: {link.visitCount}</p>
         </div>
-        <div className="min-w-[50px] flex justify-center">
-          <Copy className="cursor-pointer" onClick={copyToClipboard} />
+        <div
+          className="min-w-[50px] flex justify-center gap-2 items-center cursor-pointer"
+          onClick={copyToClipboard}
+        >
+          Copiar
+          <Copy />
         </div>
       </div>
     </Card>
