@@ -3,6 +3,9 @@ import { useLinksStore } from "../../store/linksStore";
 
 export async function shortenLink(data: any) {
   const token = document.cookie.replace("Wemely:Token=", "");
+  useLinksStore.setState({
+    loading: true,
+  });
 
   try {
     const response = await axios.post(
@@ -32,5 +35,9 @@ export async function shortenLink(data: any) {
   } catch (error) {
     console.log(error);
     throw new Error("Erro ao encurtar URL");
+  } finally {
+    useLinksStore.setState({
+      loading: false,
+    });
   }
 }

@@ -5,6 +5,9 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
 import LoggedHeader from "@/features/home/Components/LoggedHeader";
+import Image from "next/image";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+import TabsContainer from "@/features/home/Components/TabsContainer";
 
 export default async function Home() {
   const token = cookies().get("Wemely:Token");
@@ -40,10 +43,8 @@ export default async function Home() {
 
       <section className="flex flex-col justify-center max-w-6xl w-full flex-grow ">
         <Suspense>
-          <UrlShortener />
-          {links?.map((link: any) => (
-            <LinkItem key={link.id} link={link} />
-          ))}
+          {/* <UrlShortener /> */}
+          <TabsContainer links={links} />
         </Suspense>
       </section>
     </main>
