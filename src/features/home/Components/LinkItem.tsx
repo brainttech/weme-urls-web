@@ -32,7 +32,7 @@ export default function LinkItem({ link }: Props) {
         <div className="flex justify-between flex-grow flex-col ">
           <Button variant="ghost" className="w-fit p-0 text-md h-fit" asChild>
             <Link href={`/${link.shortUrl}`}>
-              links.weme.nu/{link.shortUrl}
+              links.weme.com.br/{link.shortUrl}
             </Link>
           </Button>
           <TooltipProvider>

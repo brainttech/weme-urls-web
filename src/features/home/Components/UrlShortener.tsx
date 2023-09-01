@@ -49,7 +49,7 @@ export default function UrlShortener() {
       <div className=" flex gap-8 w-full">
         <Input
           label="URL encurtada"
-          value={`links.weme.nu/${encodeURI(code)}`}
+          value={`links.weme.com.br/${encodeURI(code)}`}
           disabled
         />
         <Input
