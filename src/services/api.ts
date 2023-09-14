@@ -38,6 +38,7 @@ api.interceptors.response.use(
 
       // cookies().delete("Wemely:Token");
       localStorage.removeItem("Wemely:Token");
+      window.location.href = "/login";
 
       // const { token, refreshToken } = await getRefreshToken().catch(
       //   () => (window.location.href = "/login")
