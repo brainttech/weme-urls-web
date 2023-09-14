@@ -10,8 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { loginApplication } from "@/features/auth/@core/Application/Auth.application";
-import { loginSchema, signupSchema } from "@/features/auth/validationSchema";
+import { login } from "@/features/auth/services";
+import { loginSchema } from "@/features/auth/validationSchema";
+import { useMutation } from "@tanstack/react-query";
 
 import { Formik } from "formik";
 import Link from "next/link";
@@ -20,6 +21,8 @@ import React from "react";
 
 export default function Signup() {
   const router = useRouter();
+  const { mutateAsync, isLoading } = useMutation(login);
+
   return (
     <main className="px-2 py-4 min-h-screen flex justify-center items-center">
       <Card className="w-full h-full ">
@@ -37,8 +40,11 @@ export default function Signup() {
           validationSchema={loginSchema}
           enableReinitialize
           validateOnMount
-          onSubmit={(values) => {
-            loginApplication(values);
+          onSubmit={async (values) => {
+            const response = await mutateAsync(values);
+            if (response) {
+              router.push("/");
+            }
           }}
         >
           {({
@@ -81,6 +87,7 @@ export default function Signup() {
                     onClick={() => {
                       handleSubmit();
                     }}
+                    loading={isLoading}
                   >
                     Entrar
                   </Button>

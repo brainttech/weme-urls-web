@@ -35,6 +35,7 @@ export const loginApplication = async (loginEntity: any) => {
     window.location.href = "/";
 
     setCookie("Wemely:Token", response.token, { maxAge: 60 * 60 * 24 });
+    localStorage.setItem("Wemely:Token", response.token);
     showToast({
       type: "default",
       title: "Sucesso!",
@@ -52,5 +53,6 @@ export const loginApplication = async (loginEntity: any) => {
 
 export const logoutApplication = () => {
   deleteCookie("Wemely:Token");
+  localStorage.removeItem("Wemely:Token");
   window.location.href = "/";
 };

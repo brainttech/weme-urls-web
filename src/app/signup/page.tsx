@@ -10,16 +10,32 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { signupApplication } from "@/features/auth/@core/Application/Auth.application";
+import { ISignupEntity } from "@/features/auth/@core/Entities/signup.entity";
+import { signup } from "@/features/auth/services";
 import { signupSchema } from "@/features/auth/validationSchema";
+import { showToast } from "@/features/home/store/ToastStore";
+import { useMutation } from "@tanstack/react-query";
 
 import { Formik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function Signup() {
   const router = useRouter();
+
+  const { mutateAsync, isLoading, isError } = useMutation(signup);
+
+  useEffect(() => {
+    if (isError) {
+      showToast({
+        title: "Erro ao cadastrar",
+        description: "Verifique os dados e tente novamente",
+        type: "destructive",
+      });
+    }
+  }, [isError]);
+
   return (
     <main className="px-2 py-4 min-h-screen flex justify-center items-center">
       <Card className="w-full h-full ">
@@ -39,8 +55,16 @@ export default function Signup() {
           validationSchema={signupSchema}
           enableReinitialize
           validateOnMount
-          onSubmit={(values) => {
-            signupApplication(values);
+          onSubmit={async (values) => {
+            const response = mutateAsync(values as unknown as ISignupEntity);
+            if (!isError) {
+              showToast({
+                title: "Cadastro realizado com sucesso",
+                description: "Faça login para começar a encurtar links",
+                type: "default",
+              });
+              router.push("/login");
+            }
           }}
         >
           {({
@@ -107,6 +131,7 @@ export default function Signup() {
                     onClick={() => {
                       handleSubmit();
                     }}
+                    loading={isLoading}
                   >
                     Cadastrar
                   </Button>

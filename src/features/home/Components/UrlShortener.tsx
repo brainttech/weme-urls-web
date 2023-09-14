@@ -2,11 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { showToast } from "../store/ToastStore";
 import { shortenLinkApplication } from "../@core/Application/Home.application";
 import { useRouter } from "next/navigation";
 import { useLinksStore } from "../store/linksStore";
+import { useMutation } from "@tanstack/react-query";
+import { shortenLink } from "../@core/services";
+import { queryClient } from "./queryClient";
 
 export default function UrlShortener() {
   const [link, setLink] = useState("");
@@ -14,21 +17,38 @@ export default function UrlShortener() {
   const router = useRouter();
   const { loading } = useLinksStore.getState();
 
+  const { mutateAsync, isLoading, isError } = useMutation(shortenLink);
+
   const linkShortner = async () => {
-    const response = await shortenLinkApplication({
+    const response = await mutateAsync({
       url: link,
       code: encodeURI(code),
     });
 
-    setLink("");
-    setCode("");
-    showToast({
-      type: "default",
-      title: "Sucesso!",
-      description: "Link copiado para a área de transferência.",
-    });
-    router.refresh();
+    if (response?.shortUrl) {
+      setLink("");
+      setCode("");
+      showToast({
+        type: "default",
+        title: "Sucesso!",
+        description: "Link copiado para a área de transferência.",
+      });
+      navigator.clipboard.writeText(
+        `${process.env.NEXT_PUBLIC_URL}${response.shortUrl}`
+      );
+      queryClient.invalidateQueries(["links"]);
+    }
   };
+
+  useEffect(() => {
+    if (isError) {
+      showToast({
+        type: "destructive",
+        title: "Erro!",
+        description: "Ocorreu um erro ao encurtar o link.",
+      });
+    }
+  }, [isError]);
 
   const isURL = () => {
     if (
@@ -64,7 +84,7 @@ export default function UrlShortener() {
         className="min-w-fit"
         onClick={linkShortner}
         disabled={!isURL()}
-        loading={loading}
+        loading={isLoading}
       >
         Encurtar link
       </Button>

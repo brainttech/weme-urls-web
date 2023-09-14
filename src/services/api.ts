@@ -6,7 +6,7 @@ const URL = "localhost:8080/";
 const { setLoading } = useSignupStore.getState();
 
 export const api = axios.create({
-  baseURL: URL,
+  baseURL: process.env.NEXT_PUBLIC_API,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -15,40 +15,43 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(async (config: any) => {
-  const token = cookies().get("Wemely:Token");
+  const token = localStorage.getItem("Wemely:Token");
 
   setLoading(true);
 
-  if (token) config.headers.Authorization = "Bearer " + token.value;
+  if (token) config.headers.Authorization = "Bearer " + token;
   return config;
 });
 
-// api.interceptors.response.use(
-//   (response) => {
-//     setLoading(false);
-//     return response;
-//   },
-//   async function (error) {
-//     setLoading(false);
+api.interceptors.response.use(
+  (response) => {
+    setLoading(false);
+    return response;
+  },
+  async function (error) {
+    setLoading(false);
 
-//     const originalRequest = error.config;
+    const originalRequest = error.config;
 
-//     if (error.response.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
-//       const { token, refreshToken } = await getRefreshToken().catch(
-//         () => (window.location.href = "/login")
-//       );
+      // cookies().delete("Wemely:Token");
+      localStorage.removeItem("Wemely:Token");
 
-//       localStorage.setItem("token", token);
-//       localStorage.setItem("refreshToken", refreshToken);
+      // const { token, refreshToken } = await getRefreshToken().catch(
+      //   () => (window.location.href = "/login")
+      // );
 
-//       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-//       return api(originalRequest);
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+      // localStorage.setItem("token", token);
+      // localStorage.setItem("refreshToken", refreshToken);
+
+      // api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      return api(originalRequest);
+    }
+    return Promise.reject(error);
+  }
+);
 
 // const getRefreshToken = async () => {
 //   try {
