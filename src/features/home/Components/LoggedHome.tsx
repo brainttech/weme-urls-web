@@ -20,7 +20,7 @@ export default function LoggedHome() {
 
   return (
     <main className="flex flex-col min-h-screen items-center px-10">
-      <LoggedHeader name={data?.name} />
+      <LoggedHeader />
 
       <section className="flex flex-col justify-center max-w-6xl w-full flex-grow ">
         <TabsContainer links={data?.shortenedUrls} loading={isLoading} />

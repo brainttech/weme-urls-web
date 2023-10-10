@@ -4,18 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { showToast } from "../store/ToastStore";
-import { shortenLinkApplication } from "../@core/Application/Home.application";
-import { useRouter } from "next/navigation";
-import { useLinksStore } from "../store/linksStore";
+
 import { useMutation } from "@tanstack/react-query";
 import { shortenLink } from "../@core/services";
 import { queryClient } from "./queryClient";
+import { Card, CardContent } from "@/components/ui/card";
 
-export default function UrlShortener() {
-  const [link, setLink] = useState("");
-  const [code, setCode] = useState("");
-  const router = useRouter();
-  const { loading } = useLinksStore.getState();
+interface Props {
+  editLink?: {
+    id: number;
+    shortUrl: string;
+    url: string;
+    visitCount: number;
+  };
+}
+
+export default function UrlShortener({ editLink }: Props) {
+  const [link, setLink] = useState(editLink?.url || "");
+  const [code, setCode] = useState(editLink?.shortUrl || "");
 
   const { mutateAsync, isLoading, isError } = useMutation(shortenLink);
 
@@ -59,35 +65,41 @@ export default function UrlShortener() {
     }
   };
   return (
-    <section className="flex  flex-col items-center  w-full  gap-4">
-      <Input
-        label="URL do Link"
-        placeholder="https://go..."
-        onChange={(event) => setLink(event.target.value)}
-        value={link}
-      />
-      <div className=" flex gap-8 w-full">
-        <Input
-          label="URL encurtada"
-          value={`links.weme.com.br/${encodeURI(code)}`}
-          disabled
-        />
-        <Input
-          label="Código da URL encurtada"
-          placeholder="Digite o código do link"
-          onChange={(event) => setCode(event.target.value)}
-          value={code}
-        />
-      </div>
-      <Button
-        variant="default"
-        className="min-w-fit"
-        onClick={linkShortner}
-        disabled={!isURL()}
-        loading={isLoading}
-      >
-        Encurtar link
-      </Button>
-    </section>
+    <div className="flex w-full justify-center">
+      <Card className="w-full md:w-2/3 py-10 shadow-xl ">
+        <CardContent>
+          <section className="flex  flex-col  items-center  w-full  gap-4">
+            <Input
+              label="URL do Link"
+              placeholder="https://go..."
+              onChange={(event) => setLink(event.target.value)}
+              value={link}
+            />
+            <div className=" flex flex-col md:flex-row gap-4 md:gap-8  w-full">
+              <Input
+                label="URL encurtada"
+                value={`links.weme.com.br/${encodeURI(code)}`}
+                disabled
+              />
+              <Input
+                label="Código da URL encurtada"
+                placeholder="Digite o código do link"
+                onChange={(event) => setCode(event.target.value)}
+                value={code}
+              />
+            </div>
+            <Button
+              variant="default"
+              className="min-w-fit"
+              onClick={linkShortner}
+              disabled={!isURL()}
+              loading={isLoading}
+            >
+              {editLink?.shortUrl ? "Editar" : "Encurtar"} link
+            </Button>
+          </section>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

@@ -20,3 +20,11 @@ export async function login(data: { email: string; password: string }) {
     throw new Error(error.response.data);
   }
 }
+export async function socialLogin(data: { email: string; name: string }) {
+  const response = await api.post("/socialLogin", data);
+
+  localStorage.setItem("Wemely:Token", response.data);
+  setCookie("Wemely:Token", response.data, { maxAge: 60 * 60 * 24 });
+
+  return response.data;
+}

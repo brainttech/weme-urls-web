@@ -15,7 +15,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(async (config: any) => {
-  const token = localStorage.getItem("Wemely:Token");
+  const token = localStorage?.getItem("Wemely:Token");
 
   setLoading(true);
 
@@ -33,21 +33,12 @@ api.interceptors.response.use(
 
     const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error?.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      // cookies().delete("Wemely:Token");
-      localStorage.removeItem("Wemely:Token");
+      localStorage?.removeItem("Wemely:Token");
       window.location.href = "/login";
 
-      // const { token, refreshToken } = await getRefreshToken().catch(
-      //   () => (window.location.href = "/login")
-      // );
-
-      // localStorage.setItem("token", token);
-      // localStorage.setItem("refreshToken", refreshToken);
-
-      // api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       return api(originalRequest);
     }
     return Promise.reject(error);

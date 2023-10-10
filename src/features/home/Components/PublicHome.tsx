@@ -1,7 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export default function PublicHome() {
   return (
@@ -14,14 +12,14 @@ export default function PublicHome() {
           className="w-24"
           alt="weme logo"
         />
-        <nav className="w-full flex justify-end items-center">
+        {/* <nav className="w-full flex justify-end items-center">
           <Button variant={"ghost"} asChild>
             <Link href="/login">Entrar</Link>
           </Button>
           <Button variant="ghost" asChild>
             <Link href="/signup">Cadastre-se</Link>
           </Button>
-        </nav>
+        </nav> */}
       </div>
 
       <section className="flex flex-col justify-center max-w-6xl w-full flex-grow ">
