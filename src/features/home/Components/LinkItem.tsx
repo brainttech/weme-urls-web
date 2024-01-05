@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
@@ -78,7 +78,7 @@ export default function LinkItem({ link }: Props) {
             <span className="hidden sm:inline-block">Copiar</span>
             <Copy />
           </div>
-          {/* <div
+          <div
             className="min-w-[50px] flex justify-center gap-2 items-center cursor-pointer"
             onClick={() =>
               router.push("/user/edit?link=" + JSON.stringify(link))
@@ -86,7 +86,7 @@ export default function LinkItem({ link }: Props) {
           >
             <span className="hidden sm:inline-block">Editar</span>
             <Pencil />
-          </div> */}
+          </div>
           <div
             className="min-w-[50px] flex justify-center gap-2 items-center cursor-pointer"
             onClick={() => handleDelete(link?.id)}

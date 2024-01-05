@@ -6,9 +6,10 @@ import { useEffect, useState } from "react";
 import { showToast } from "../store/ToastStore";
 
 import { useMutation } from "@tanstack/react-query";
-import { shortenLink } from "../@core/services";
+import { handleEditLink, shortenLink } from "../@core/services";
 import { queryClient } from "./queryClient";
 import { Card, CardContent } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 interface Props {
   editLink?: {
@@ -22,10 +23,29 @@ interface Props {
 export default function UrlShortener({ editLink }: Props) {
   const [link, setLink] = useState(editLink?.url || "");
   const [code, setCode] = useState(editLink?.shortUrl || "");
+  const router = useRouter()
 
   const { mutateAsync, isLoading, isError } = useMutation(shortenLink);
+  const useEditLink = useMutation({
+    mutationFn: handleEditLink,
+    onSuccess: () => {
+      setLink("");
+      setCode("");
+      showToast({
+        type: "default",
+        title: "Sucesso!",
+        description: "Link copiado para a área de transferência.",
+      });
+      navigator.clipboard.writeText(
+        `${process.env.NEXT_PUBLIC_URL}${code}`
+      );
+      queryClient.invalidateQueries(["links"]);
+      router.push("/user/links")
+    },
+  })
 
   const linkShortner = async () => {
+    
     const response = await mutateAsync({
       url: link,
       code: encodeURI(code),
@@ -46,15 +66,16 @@ export default function UrlShortener({ editLink }: Props) {
     }
   };
 
+
   useEffect(() => {
-    if (isError) {
+    if (isError || useEditLink.isError) {
       showToast({
         type: "destructive",
         title: "Erro!",
         description: "Ocorreu um erro ao encurtar o link.",
       });
     }
-  }, [isError]);
+  }, [isError, useEditLink.isError]);
 
   const isURL = () => {
     if (
@@ -91,9 +112,20 @@ export default function UrlShortener({ editLink }: Props) {
             <Button
               variant="default"
               className="min-w-fit"
-              onClick={linkShortner}
+              onClick={()=>{
+                if(editLink?.shortUrl){
+                  useEditLink.mutateAsync({
+                    id: editLink?.id,
+                    url: link,
+                    code: encodeURI(code),
+                  })
+                  return
+                }
+                linkShortner()
+              
+              }}
               disabled={!isURL()}
-              loading={isLoading}
+              loading={isLoading || useEditLink.isLoading}
             >
               {editLink?.shortUrl ? "Editar" : "Encurtar"} link
             </Button>
